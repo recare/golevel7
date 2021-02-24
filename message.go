@@ -30,10 +30,12 @@ func NewMessage(v []byte) *Message {
 	} else {
 		utf8V = v
 	}
-	return &Message{
+	newMessage := &Message{
 		Value:      []rune(string(utf8V)),
 		Delimeters: *NewDelimeters(),
 	}
+	newMessage.parse()
+	return newMessage
 }
 
 func (m *Message) String() string {
