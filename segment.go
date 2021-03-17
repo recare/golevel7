@@ -198,3 +198,13 @@ func (s *Segment) Set(l *Location, val string, seps *Delimeters) error {
 	s.Value = s.encode(seps)
 	return nil
 }
+
+func (s *Segment) GetNumFields() int {
+	numFields := 0
+	for _, f := range s.Fields {
+		if f.SeqNum > numFields {
+			numFields = f.SeqNum
+		}
+	}
+	return numFields
+}
