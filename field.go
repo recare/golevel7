@@ -69,7 +69,8 @@ func (f *Field) encode(seps *Delimeters) []rune {
 func (f *Field) Component(i int) (*Component, error) {
 	if i >= len(f.Components) || i < 1 {
 		return nil, ErrComponentOutOfRange
-
+	}
+	
 	return &f.Components[i-1], nil
 }
 
