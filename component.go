@@ -46,10 +46,10 @@ func (c *Component) parse(seps *Delimeters) error {
 
 // SubComponent returns the subcomponent i
 func (c *Component) SubComponent(i int) (*SubComponent, error) {
-	if i >= len(c.SubComponents) {
+	if i > len(c.SubComponents) || i < 1 {
 		return nil, fmt.Errorf("SubComponent out of range")
 	}
-	return &c.SubComponents[i], nil
+	return &c.SubComponents[i-1], nil
 }
 
 func (c *Component) encode(seps *Delimeters) []rune {

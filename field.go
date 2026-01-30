@@ -1,23 +1,34 @@
 package golevel7
 
 import (
+	"fmt"
 	"strings"
+
+	"github.com/recare/golevel7/commons"
 )
 
 // Field is an HL7 field
 type Field struct {
+	SegName    string
 	SeqNum     int
 	Components []Component
 	Value      []rune
 }
 
+func (f *Field) NumSubFields() int {
+	return len(f.Components)
+}
+
 func (f *Field) String() string {
-	var str string
-	for _, c := range f.Components {
-		str += "Field Component: " + string(c.Value) + "\n"
-		str += c.String()
+	// var str string
+	// for _, c := range f.Components {
+	// 	str += "Field Component: " + string(c.Value) + "\n"
+	// 	str += c.String()
+	// }
+	if f.SeqNum == 0 {
+		return fmt.Sprintf("\t%v", commons.FieldNames[f.SegName][f.SeqNum])
 	}
-	return str
+	return fmt.Sprintf("\t%v: %v", commons.FieldNames[f.SegName][f.SeqNum], string(f.Value))
 }
 
 func (f *Field) parse(seps *Delimeters) error {
@@ -57,10 +68,11 @@ func (f *Field) encode(seps *Delimeters) []rune {
 
 // Component returns the component i
 func (f *Field) Component(i int) (*Component, error) {
-	if i >= len(f.Components) {
+	if i >= len(f.Components) || i < 1 {
 		return nil, ErrComponentOutOfRange
 	}
-	return &f.Components[i], nil
+
+	return &f.Components[i-1], nil
 }
 
 // Get returns the value specified by the Location
