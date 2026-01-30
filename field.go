@@ -2,8 +2,9 @@ package golevel7
 
 import (
 	"fmt"
-	"golevel7/commons"
 	"strings"
+
+	"github.com/recare/golevel7/commons"
 )
 
 // Field is an HL7 field
@@ -70,7 +71,7 @@ func (f *Field) Component(i int) (*Component, error) {
 	if i >= len(f.Components) || i < 1 {
 		return nil, ErrComponentOutOfRange
 	}
-	
+
 	return &f.Components[i-1], nil
 }
 

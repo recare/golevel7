@@ -1,4 +1,4 @@
-module github.com/veyo-care/golevel7
+module github.com/recare/golevel7
 
 go 1.12
 
