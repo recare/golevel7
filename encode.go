@@ -35,7 +35,7 @@ func (e *Encoder) Encode(it interface{}) error {
 }
 
 // Marshal will insert values into a message.
-// It will panic if interface{} is not a pointer to a struct
+// It will panic if interface{} is not a pointer to a struct.
 func Marshal(message *Message, it interface{}) ([]byte, error) {
 	existingMSH, _ := message.Segment("MSH")
 
@@ -55,14 +55,20 @@ func Marshal(message *Message, it interface{}) ([]byte, error) {
 
 	baseStructType := baseStruct.Type()
 	for i := 0; i < baseStruct.NumField(); i++ {
-		field := baseStructType.Field(i)
+		fieldType := baseStructType.Field(i)
 
-		fieldTag := field.Tag.Get("hl7")
-		if fieldTag != "" {
-			location := NewLocation(fieldTag)
+		fieldTag := fieldType.Tag.Get("hl7")
+		if fieldTag == "" {
+			continue
+		}
 
-			value := baseStruct.Field(i).String()
-			if err := message.Set(location, value); err != nil {
+		location := NewLocation(fieldTag)
+
+		field := baseStruct.Field(i)
+
+		switch field.Kind() {
+		case reflect.String:
+			if err := message.Set(location, field.String()); err != nil {
 				return nil, err
 			}
 		}
