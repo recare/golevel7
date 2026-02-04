@@ -76,3 +76,47 @@ func Marshal(message *Message, it interface{}) ([]byte, error) {
 
 	return []byte(string(message.Value)), nil
 }
+
+func MarshalSegment(segment *Segment, it interface{}, delimeters *Delimeters) ([]byte, error) {
+	baseStruct := reflect.ValueOf(it).Elem()
+
+	baseStructType := baseStruct.Type()
+	for i := 0; i < baseStruct.NumField(); i++ {
+		fieldType := baseStructType.Field(i)
+
+		fieldTag := fieldType.Tag.Get("hl7")
+		if fieldTag == "" {
+			continue
+		}
+
+		location := NewLocation(fieldTag)
+
+		field := baseStruct.Field(i)
+
+		switch field.Kind() {
+		case reflect.String:
+			if err := segment.SetForMarshaling(location, field.String(), delimeters); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	return []byte(string(segment.Value)), nil
+}
+
+// SetForMarshaling will insert a value into a Segment at Location.
+// ONLY use for MarshalSegment.
+func (segment *Segment) SetForMarshaling(l *Location, val string, delimeters *Delimeters) error {
+	if l.Segment == "" {
+		return errors.New("Segment is required")
+	}
+	field, err := segment.Field(0)
+	if err != nil || string(field.Value) != l.Segment {
+		segment.forceField([]rune(l.Segment), 0)
+	}
+
+	segment.Set(l, val, delimeters)
+
+	segment.Value = segment.encode(delimeters)
+	return nil
+}
