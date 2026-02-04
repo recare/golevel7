@@ -47,8 +47,7 @@ type obx struct {
 }
 
 func TestMarshalSegment_BaseCase(t *testing.T) {
-	testValue := []rune(`OBX|2|NM|RBC^RED BLOOD CELL COUNT||||||||F|||20050615230600
-	`)
+	testValue := []rune(`OBX|2|NM|RBC^RED BLOOD CELL COUNT||||||||F|||20050615230600`)
 
 	newSegment := &Segment{}
 	delimiters := NewDelimeters()
