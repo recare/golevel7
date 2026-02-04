@@ -77,6 +77,7 @@ func Marshal(message *Message, it interface{}) ([]byte, error) {
 	return []byte(string(message.Value)), nil
 }
 
+// MarshalSegment marshals a segment. You must ensure all tags use the same segment.
 func MarshalSegment(segment *Segment, it interface{}, delimeters *Delimeters) ([]byte, error) {
 	baseStruct := reflect.ValueOf(it).Elem()
 
