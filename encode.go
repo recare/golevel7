@@ -36,28 +36,28 @@ func (e *Encoder) Encode(it interface{}) error {
 
 // Marshal will insert values into a message
 // It will panic if interface{} is not a pointer to a struct
-func Marshal(m *Message, it interface{}) ([]byte, error) {
-	existingMSH, _ := m.Segment("MSH")
+func Marshal(message *Message, it interface{}) ([]byte, error) {
+	existingMSH, _ := message.Segment("MSH")
 
 	//If we have no MSH header (in case of new message) add it first
 	if existingMSH == nil {
-		seg := Segment{Value: []rune("MSH" + string(m.Delimeters.Field) + m.Delimeters.DelimeterField)}
-		seg.parse(&m.Delimeters)
-		m.Segments = append(m.Segments, seg)
+		segment := Segment{Value: []rune("MSH" + string(message.Delimeters.Field) + message.Delimeters.DelimeterField)}
+		segment.parse(&message.Delimeters)
+		message.Segments = append(message.Segments, segment)
 	}
 
-	st := reflect.ValueOf(it).Elem()
-	stt := st.Type()
-	for i := 0; i < st.NumField(); i++ {
-		fld := stt.Field(i)
-		r := fld.Tag.Get("hl7")
-		if r != "" {
-			l := NewLocation(r)
-			val := st.Field(i).String()
-			if err := m.Set(l, val); err != nil {
+	baseStruct := reflect.ValueOf(it).Elem()
+	baseStructType := baseStruct.Type()
+	for i := 0; i < baseStruct.NumField(); i++ {
+		field := baseStructType.Field(i)
+		fieldTag := field.Tag.Get("hl7")
+		if fieldTag != "" {
+			location := NewLocation(fieldTag)
+			value := baseStruct.Field(i).String()
+			if err := message.Set(location, value); err != nil {
 				return nil, err
 			}
 		}
 	}
-	return []byte(string(m.Value)), nil
+	return []byte(string(message.Value)), nil
 }
